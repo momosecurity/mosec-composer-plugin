@@ -3,7 +3,7 @@
     "description": "用于检测Composer项目的第三方依赖组件是否存在安全漏洞",
     "type": "composer-plugin",
     "version": "1.0.3",
-    "keywords": ["sec", "vulnerability", "dependency"],
+    "keywords": ["security", "vulnerability", "dependency"],
     "require": {
         "php": ">=7.0",
         "composer-plugin-api": "^1.1",
