@@ -1,0 +1,24 @@
+Changelog
+
+=========
+
+Version 1.0.3
+
+- feature  add endpoint param
+- feature  not check system dependencies
+- feature  change notFailOnVuln param to noExcept
+- test     add unittest
+
+Version 1.0.2
+
+- feature  default throw Exception when found vulnerable && parameter support
+- remove   remove parameter shortcut
+
+Version 1.0.1
+
+- feature  add onlyProvenance param
+- feature  warning detail add title and cve
+
+Version 1.0.0
+
+- Init

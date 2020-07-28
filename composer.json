@@ -1,0 +1,32 @@
+{
+    "name": "momo/mosec-composer-plugin",
+    "description": "用于检测Composer项目的第三方依赖组件是否存在安全漏洞",
+    "type": "composer-plugin",
+    "version": "1.0.3",
+    "keywords": ["sec", "vulnerability", "dependency"],
+    "require": {
+        "php": ">=7.0",
+        "composer-plugin-api": "^1.1",
+        "ext-json": "*",
+        "ext-curl": "*"
+    },
+    "require-dev": {
+        "composer/composer": "^1.7",
+        "phpunit/phpunit": "^6"
+    },
+    "authors": [
+        {
+            "name": "retanoj",
+            "email": "mmsrc@immomo.com"
+        }
+    ],
+    "autoload": {
+        "classmap": [
+            "src/",
+            "test/"
+        ]
+    },
+    "extra":{
+        "class": "Momo\\Sec\\Inspect"
+    }
+}
