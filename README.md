@@ -84,7 +84,7 @@ Help:
 
 程序返回值为1，表示发现漏洞。返回值为0，即为未发现问题。
 
-![usage](https://github.com/momosecurity/mosec-composer-plugin/blob/master/static/usage.jpg)
+![usage](./static/usage.jpg)
 
 
 
@@ -114,6 +114,6 @@ MOSEC-COMPOSER-PLUGIN 内部是对 composer show 命令程序的扩展，利用�
 
 注意环境变量填写`COMPOSER_ALLOW_XDEBUG=1`
 
-![debug-configuration](https://github.com/momosecurity/mosec-composer-plugin/blob/master/static/debug-configuration.jpg)
+![debug-configuration](./static/debug-configuration.jpg)
 
 4.下断点，开始Debug
