@@ -45,6 +45,45 @@ Composer >= 1.7.0
 > composer config -g --unset repo.gh-momo-plugin
 ```
 
+## 帮助
+
+```shell script
+> composer mosec:test --help
+
+Usage:
+  mosec:test [options]
+
+Options:
+      --endpoint=ENDPOINT              上报API [default: ""]
+      --severityLevel[=SEVERITYLEVEL]  设置威胁等级 [High|Medium|Low] [default: "High"]
+      --onlyProvenance                 仅检查直接依赖
+      --noExcept                       发现漏洞不抛出异常
+  -h, --help                           Display this help message
+
+Help:
+  shell> composer mosec:test --onlyProvenance --endpoint=http://your/api
+```
+
+## 使用效果
+
+以 test/vuln-project 项目为例。
+
+红色部分给出漏洞警告，From: 为漏洞依赖链，Fix version 为组件安全版本。
+
+程序返回值为1，表示发现漏洞。返回值为0，即为未发现问题。
+
+![usage](https://github.com/momosecurity/mosec-composer-plugin/blob/master/static/usage.jpg)
+
+## 检测原理
+
+MOSEC-COMPOSER-PLUGIN 内部是对 composer show 命令程序的扩展，利用其返回当前项目所安装的依赖构建依赖树。
+
+因此需要项目先`compoesr install`后才可进行检测。否则抛出`No dependencies installed. Try running composer install or update.`异常。
+
+最终依赖树会交由 [MOSEC-X-PLUGIN-BACKEND](https://github.com/momosecurity/mosec-x-plugin-backend.git) 检测服务进行检测，并返回结果。
+
+相关数据结构请参考 MOSEC-X-PLUGIN-BACKEND [README.md](https://github.com/momosecurity/mosec-x-plugin-backend/blob/master/README.md).
+
 ## 开发
 
 #### PHPStorm 调试 Composer 插件

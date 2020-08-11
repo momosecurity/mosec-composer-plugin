@@ -1,0 +1,17 @@
+{
+  "name": "mosec/vuln-proj",
+  "version": "1.0.3",
+  "description": "mosec 测试项目",
+  "type": "project",
+  "keywords": ["sec", "vulnerability"],
+  "require": {
+    "php": ">=7.0",
+    "laravel/framework": "5.7.5"
+  },
+  "authors": [
+    {
+      "name": "foo",
+      "email": "foo@bar.com"
+    }
+  ]
+}
