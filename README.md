@@ -90,9 +90,7 @@ Help:
 
 ## 检测原理
 
-MOSEC-COMPOSER-PLUGIN 内部是对 composer show 命令程序的扩展，利用其返回当前项目所安装的依赖构建依赖树。
-
-因此需要项目先`compoesr install`后才可进行检测。否则抛出`No dependencies installed. Try running composer install or update.`异常。
+MOSEC-COMPOSER-PLUGIN 内部是对`composer install --dry-run`命令程序的扩展，利用其解析项目依赖。
 
 最终依赖树会交由 [MOSEC-X-PLUGIN-BACKEND](https://github.com/momosecurity/mosec-x-plugin-backend.git) 检测服务进行检测，并返回结果。
 

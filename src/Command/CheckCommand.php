@@ -31,6 +31,7 @@ use Momo\Sec\Exception\FoundVulnException;
 use Momo\Sec\Exception\NetworkException;
 use Momo\Sec\Inspect;
 use Momo\Sec\CurlClient;
+use Momo\Sec\MomoInstaller;
 use RuntimeException;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
@@ -126,17 +127,28 @@ EOF
 
     private function getDeps() {
         $composer = $this->getComposer(false);
+        $io = $this->getIO();
+        $installedRepo = $this->getComposer()->getRepositoryManager()->getLocalRepository();
+        $rootPkg = $this->getComposer()->getPackage();
+        if (!$installedRepo->getPackages() && ($rootPkg->getRequires() || $rootPkg->getDevRequires())) {
+            // 手动运行dry-run
+            $install = MomoInstaller::create($io, $composer);
+            $install
+                ->setDryRun(true)
+                ->setIgnorePlatformRequirements(true);
+            $install->run();
+        }
+        $installedRepo = $this->getComposer()->getRepositoryManager()->getLocalRepository();
+        if (!$installedRepo->getPackages() && ($rootPkg->getRequires() || $rootPkg->getDevRequires())) {
+            throw new DependenciesNotFoundException('No dependencies installed. Try running composer install or update.');
+        }
+
         $platformOverrides = array();
         if ($composer) {
             $platformOverrides = $composer->getConfig()->get('platform') ?: array();
         }
 
         $platformRepo = new PlatformRepository(array(), $platformOverrides);
-        $installedRepo = $this->getComposer()->getRepositoryManager()->getLocalRepository();
-        $rootPkg = $this->getComposer()->getPackage();
-        if (!$installedRepo->getPackages() && ($rootPkg->getRequires() || $rootPkg->getDevRequires())) {
-            throw new DependenciesNotFoundException('No dependencies installed. Try running composer install or update.');
-        }
 
         $this->systemDeps = $this->enumDeps($platformRepo);
         $this->installedDeps = $this->enumDeps($installedRepo);
