@@ -277,7 +277,7 @@ EOF
     private function depsTreeToDict(&$root, $arrayTree) {
         $root['dependencies'] = [];
         foreach ($arrayTree as $block) {
-            if (isset($this->systemDeps[$block['name']])) {
+            if ($block == [] || isset($this->systemDeps[$block['name']])) {
                 // jump system Dependencies
                 continue;
             }
