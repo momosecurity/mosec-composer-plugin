@@ -1,12 +1,12 @@
 {
-  "name": "mosec-test-proj",
+  "name": "momo/mosec-test-proj",
   "version": "1.0.3",
   "description": "mosec 测试项目",
   "type": "project",
   "keywords": ["sec", "vulnerability"],
   "require": {
     "php": ">=7.0",
-    "phpunit/phpunit": "6.*"
+    "phpunit/phpunit": "6.3.0"
   },
   "authors": [
     {

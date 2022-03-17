@@ -18,7 +18,7 @@
 
 use Composer\Console\Application;
 use Composer\Package\CompletePackage;
-use Composer\Repository\InstalledArrayRepository;
+use Composer\Repository\LockArrayRepository;
 use Momo\Sec\Inspect;
 use PHPUnit\Framework\TestCase;
 
@@ -34,19 +34,17 @@ class CheckCommandTest extends TestCase {
         $this->inspect = new Inspect();
 
         $this->app = new Application();
-        $this->repo = new InstalledArrayRepository();
+        $this->repo = new LockArrayRepository();
         $package = new CompletePackage('phpunit/phpunit', '6.3.0.0', '6.3.0');
         $package->setDescription("fake description");
         $this->repo->addPackage($package);
 
         // set composer config to test 'valid-project' dir
         putenv('COMPOSER='.__DIR__.'/valid-project/composer.json');
-
-        $this->app->getComposer()->getRepositoryManager()->setLocalRepository($this->repo);
     }
 
-    public function testGetDeps() {
-        $method = new ReflectionMethod(\Momo\Sec\Command\CheckCommand::class, 'getDeps');
+    public function testInstallDeps() {
+        $method = new ReflectionMethod(\Momo\Sec\Command\CheckCommand::class, 'installDeps');
         $method->setAccessible(true);
 
         $command = $this->inspect->getCommands()[0];
@@ -66,7 +64,8 @@ class CheckCommandTest extends TestCase {
             }
         }
 
-        $this->assertEquals($installedDeps, ['phpunit/phpunit' => '6.3.0']);
+        $this->assertTrue(isset($installedDeps['phpunit/phpunit']));
+        $this->assertEquals($installedDeps['phpunit/phpunit']->getPrettyVersion(), '6.3.0');
     }
 
     public function testBuildDepTree() {
@@ -77,15 +76,16 @@ class CheckCommandTest extends TestCase {
         $command->setApplication($this->app);
 
         $depsTree = $method->invoke($command);
+        $depsTree['dependencies']['phpunit/phpunit']['dependencies'] = [];
         $expect = [
-            'name'          => 'mosec-test-proj',
+            'name'          => 'momo/mosec-test-proj',
             'version'       => '1.0.3',
-            'from'          => ['mosec-test-proj@1.0.3'],
+            'from'          => ['momo/mosec-test-proj@1.0.3'],
             'dependencies'  => [
                 'phpunit/phpunit' => [
                     'name'          => 'phpunit/phpunit',
                     'version'       => '6.3.0',
-                    'from'          => ['mosec-test-proj@1.0.3', 'phpunit/phpunit@6.3.0'],
+                    'from'          => ['momo/mosec-test-proj@1.0.3', 'phpunit/phpunit@6.3.0'],
                     'dependencies'  =>[]
                 ]
             ]

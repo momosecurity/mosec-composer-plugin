@@ -56,4 +56,12 @@ class Inspect implements PluginInterface, Capable, CommandProvider {
     public function activate(Composer $composer, IOInterface $io) {
         static::$composer = $composer;
     }
+
+    public function deactivate(Composer $composer, IOInterface $io) {
+        // TODO: Implement deactivate() method.
+    }
+
+    public function uninstall(Composer $composer, IOInterface $io) {
+        // TODO: Implement uninstall() method.
+    }
 }

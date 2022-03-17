@@ -2,6 +2,10 @@ Changelog
 
 =========
 
+Version 2.0.0
+
+- Change default composer to support Composer 2.0+
+
 Version 1.0.4
 
 - feature Using dry-run to resolve dependencies instead of downloading all dependencies

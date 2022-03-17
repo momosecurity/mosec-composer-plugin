@@ -16,8 +16,10 @@ WeChat:
 
 ## 版本要求
 
-Composer >= 1.7.0
-
+| Composer Version | Plugin Version |
+|------------------|----------------|
+| \>= 1.7.0        | 1.0.4          |
+| \>= 2.0.0        | 2.0.0          |
 
 
 ## 安装
@@ -26,7 +28,7 @@ Composer >= 1.7.0
 
 ```shell script
 > composer config -g repo.gh-momo-plugin git https://github.com/momosecurity/mosec-composer-plugin.git
-> composer global require --dev momo/mosec-composer-plugin
+> composer global require --dev momo/mosec-composer-plugin {Plugin Version}
 ```
 
 
@@ -104,13 +106,22 @@ MOSEC-COMPOSER-PLUGIN 内部是对`composer install --dry-run`命令程序的扩
 
 1.git clone mosec-composer-plugin
 
-2.composer install 安装项目依赖
+2.进入项目目录，composer install 安装项目依赖
 
-3.PHPStorm 中新建 PHP Sript Configuration 并填入如下信息
+3.为composer 全局安装mosec-composer-plugin插件，插件仓库使用path方式制定
 
-注意File选择项目vendor目录下的composer
+```bash
+> composer config -g repo.mosec path {mosec-composer-plugin dir locate}
+> composer global require momo/mosec-composer-plugin
+```
 
-注意环境变量填写`COMPOSER_ALLOW_XDEBUG=1`
+4.PHPStorm 中新建 PHP Sript Configuration 并填入如下信息
+
+- 注意File选择当前项目vendor目录下的composer
+
+- 注意环境变量填写`COMPOSER_ALLOW_XDEBUG=1`
+
+- 注意Custom working directory 填写可测试项目所在路径
 
 ![debug-configuration](./static/debug-configuration.jpg)
 
