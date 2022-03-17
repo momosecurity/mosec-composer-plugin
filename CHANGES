@@ -2,9 +2,13 @@ Changelog
 
 =========
 
+Version 1.0.5
+
+- feature  change noExcept param to notFailOnVuln
+
 Version 1.0.4
 
-- feature Using dry-run to resolve dependencies instead of downloading all dependencies
+- feature  Using dry-run to resolve dependencies instead of downloading all dependencies
 
 Version 1.0.3
 
