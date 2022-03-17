@@ -69,7 +69,7 @@ Options:
       --endpoint=ENDPOINT              上报API [default: ""]
       --severityLevel[=SEVERITYLEVEL]  设置威胁等级 [High|Medium|Low] [default: "High"]
       --onlyProvenance                 仅检查直接依赖
-      --noExcept                       发现漏洞不抛出异常
+      --notFailOnVuln                  发现漏洞不抛出异常
   -h, --help                           Display this help message
 
 Help:

@@ -2,9 +2,13 @@ Changelog
 
 =========
 
+Version 2.0.1
+
+- feature  change noExcept param to notFailOnVuln
+
 Version 2.0.0
 
-- Change default composer to support Composer 2.0+
+- Update   Change default composer to support Composer 2.0+
 
 Version 1.0.4
 

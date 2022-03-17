@@ -92,7 +92,7 @@ class CheckCommand extends BaseCommand {
             ->addOption('endpoint', '', InputOption::VALUE_REQUIRED, '上报API', '')
             ->addOption('severityLevel', '', InputOption::VALUE_OPTIONAL, '设置威胁等级 [High|Medium|Low]', 'High')
             ->addOption('onlyProvenance', '', InputOption::VALUE_NONE, '仅检查直接依赖', null)
-            ->addOption('noExcept', '', InputOption::VALUE_NONE, '发现漏洞不抛出异常', null)
+            ->addOption('notFailOnVuln', '', InputOption::VALUE_NONE, '发现漏洞不抛出异常', null)
             ->setDescription('check vulnerabilities on package.lock')
             ->setHelp(<<<EOF
 cmd> composer mosec:test --onlyProvenance --endpoint=https://your/api
@@ -107,7 +107,7 @@ EOF
         }
 
         $this->onlyProvenance = $input->getOption('onlyProvenance');
-        $this->failOnVuln = !$input->getOption('noExcept');
+        $this->failOnVuln = !$input->getOption('notFailOnVuln');
 
         $this->installDeps();
         $depTree = $this->buildDepTree();
