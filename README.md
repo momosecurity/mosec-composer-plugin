@@ -26,7 +26,7 @@ Composer >= 1.7.0
 
 ```shell script
 > composer config -g repo.gh-momo-plugin git https://github.com/momosecurity/mosec-composer-plugin.git
-> composer global require --dev momo/mosec-composer-plugin
+> composer global require --dev momo/mosec-composer-plugin:1.0.6
 ```
 
 
