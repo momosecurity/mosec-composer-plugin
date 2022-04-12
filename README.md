@@ -49,7 +49,7 @@ Composer >= 1.7.0
 #### 全局卸载
 
 ```shell script
-> composer global remove momo/mosec-composer-plugin
+> composer global remove --dev momo/mosec-composer-plugin
 > composer config -g --unset repo.gh-momo-plugin
 ```
 
@@ -67,7 +67,9 @@ Options:
       --endpoint=ENDPOINT              上报API [default: ""]
       --severityLevel[=SEVERITYLEVEL]  设置威胁等级 [High|Medium|Low] [default: "High"]
       --onlyProvenance                 仅检查直接依赖
-      --noExcept                       发现漏洞不抛出异常
+      --notFailOnVuln                  发现漏洞不抛出异常
+      --onlyAnalyze                    仅分析不上报
+      --writeToFile                    输出依赖树到文件。设置--onlyAnalyze仅输出依赖树，否则输出依赖树及漏洞检查结果
   -h, --help                           Display this help message
 
 Help:
