@@ -28,7 +28,7 @@ WeChat:
 
 ```shell script
 > composer config -g repo.gh-momo-plugin git https://github.com/momosecurity/mosec-composer-plugin.git
-> composer global require --dev momo/mosec-composer-plugin {Plugin Version}
+> composer global require --dev momo/mosec-composer-plugin:2.0.2
 ```
 
 
@@ -51,7 +51,7 @@ WeChat:
 #### 全局卸载
 
 ```shell script
-> composer global remove momo/mosec-composer-plugin
+> composer global remove --dev momo/mosec-composer-plugin
 > composer config -g --unset repo.gh-momo-plugin
 ```
 
@@ -68,8 +68,11 @@ Usage:
 Options:
       --endpoint=ENDPOINT              上报API [default: ""]
       --severityLevel[=SEVERITYLEVEL]  设置威胁等级 [High|Medium|Low] [default: "High"]
-      --onlyProvenance                 仅检查直接依赖
-      --notFailOnVuln                  发现漏洞不抛出异常
+      --onlyProvenance                 仅检查直接依赖 [default: false]
+      --notFailOnVuln                  发现漏洞不抛出异常 [default: false]
+      --onlyAnalyze                    仅分析不上报 [default: false]
+      --writeToFile                    输出依赖树到文件。设置--onlyAnalyze仅输出依赖树，否则输出依赖树及漏洞检查结果 [default: ""]
+      --withDevReqs                    是否包含dev依赖 [default: false]
   -h, --help                           Display this help message
 
 Help:

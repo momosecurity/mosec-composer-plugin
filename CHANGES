@@ -2,6 +2,12 @@ Changelog
 
 =========
 
+Version 2.0.2
+
+- feature  support --onlyAnalyze mode
+- feature  support --writeToFile, dump dependencies to File
+- feature  support --withDevReqs, collect dependencies with `require-dev`
+
 Version 2.0.1
 
 - feature  change noExcept param to notFailOnVuln

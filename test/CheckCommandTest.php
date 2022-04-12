@@ -105,10 +105,19 @@ class CheckCommandTest extends TestCase {
         $this->assertTrue(true);
     }
 
+    /**
+     * @throws ReflectionException
+     */
     public function testRendererNotOKResponse() {
-        $method = new ReflectionMethod(\Momo\Sec\Command\CheckCommand::class, 'rendererResponse');
-        $method->setAccessible(true);
+        $command = $this->inspect->getCommands()[0];
+        $refClass = new ReflectionClass($command);
+        $fFailOnVuln = $refClass->getProperty('failOnVuln');
+        $mRendererResponse = $refClass->getMethod('rendererResponse');
 
+        $fFailOnVuln->setAccessible(true);
+        $mRendererResponse->setAccessible(true);
+
+        $fFailOnVuln->setValue($command, true);
         $response = [
             'ok' => false,
             'dependencyCount' => 3,
@@ -117,7 +126,7 @@ class CheckCommandTest extends TestCase {
         $this->expectException(\Momo\Sec\Exception\FoundVulnException::class);
         $this->expectExceptionMessage(\Momo\Sec\Constants::ERROR_ON_VULNERABLE);
         $this->expectExceptionCode(1);
-        $method->invoke($this->inspect->getCommands()[0], json_encode($response));
+        $mRendererResponse->invoke($command, json_encode($response));
     }
 
     public function testPrintSingleVuln() {

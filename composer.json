@@ -2,7 +2,7 @@
     "name": "momo/mosec-composer-plugin",
     "description": "用于检测Composer项目的第三方依赖组件是否存在安全漏洞",
     "type": "composer-plugin",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "keywords": ["security", "vulnerability", "dependency"],
     "require": {
         "php": ">=7.0",

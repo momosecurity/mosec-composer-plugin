@@ -68,18 +68,40 @@ class CheckCommand extends BaseCommand {
     protected $endpoint;
 
     /**
+     * 威胁等级
+     * @var string
+     */
+    protected $severityLevel;
+
+    /**
      * 仅检查直接依赖
      * @var bool
      */
-    protected $onlyProvenance = false;
+    protected $onlyProvenance;
 
     /**
      * 发现漏洞即编译失败
      * @var bool
      */
-    protected $failOnVuln = true;
+    protected $failOnVuln;
 
-    protected $devMode = false;
+    /**
+     * 仅分析不上报
+     * @var bool
+     */
+    protected $onlyAnalyze;
+
+    /**
+     * 输出依赖树到文件。设置--onlyAnalyze仅输出依赖树，否则输出依赖树及漏洞检查结果
+     * @var null | string
+     */
+    protected $writeToFile;
+
+    /**
+     * 是否包含检查dev依赖
+     * @var bool
+     */
+    protected $withDevReqs = false;
 
     public function __construct(Inspect $inspect, $name = null) {
         $this->inspect = $inspect;
@@ -89,10 +111,13 @@ class CheckCommand extends BaseCommand {
 
     protected function configure() {
         $this->setName('mosec:test')
-            ->addOption('endpoint', '', InputOption::VALUE_REQUIRED, '上报API', '')
+            ->addOption('endpoint', '', InputOption::VALUE_OPTIONAL, '上报API', '')
             ->addOption('severityLevel', '', InputOption::VALUE_OPTIONAL, '设置威胁等级 [High|Medium|Low]', 'High')
-            ->addOption('onlyProvenance', '', InputOption::VALUE_NONE, '仅检查直接依赖', null)
-            ->addOption('notFailOnVuln', '', InputOption::VALUE_NONE, '发现漏洞不抛出异常', null)
+            ->addOption('onlyProvenance', '', InputOption::VALUE_NONE, '仅检查直接依赖 [default: false]', null)
+            ->addOption('notFailOnVuln', '', InputOption::VALUE_NONE, '发现漏洞不抛出异常 [default: false]', null)
+            ->addOption('onlyAnalyze', '', InputOption::VALUE_NONE, '仅分析不上报 [default: false]', null)
+            ->addOption('writeToFile', '', InputOption::VALUE_OPTIONAL, '输出依赖树到文件。设置--onlyAnalyze仅输出依赖树，否则输出依赖树及漏洞检查结果', '')
+            ->addOption('withDevReqs', '', InputOption::VALUE_NONE, '包含dev依赖 [default: false]', null)
             ->setDescription('check vulnerabilities on package.lock')
             ->setHelp(<<<EOF
 cmd> composer mosec:test --onlyProvenance --endpoint=https://your/api
@@ -101,34 +126,69 @@ EOF
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
-        $this->endpoint = $input->getOption('endpoint');
-        if (empty($this->endpoint)) {
+        $this->getAndValidateOptions($input);
+        if (!$this->onlyAnalyze && empty($this->endpoint)) {
             throw new RuntimeException(Constants::ERROR_ON_NULL_ENDPOINT);
         }
 
-        $this->onlyProvenance = $input->getOption('onlyProvenance');
-        $this->failOnVuln = !$input->getOption('notFailOnVuln');
-
         $this->installDeps();
         $depTree = $this->buildDepTree();
+
+        if ($this->onlyAnalyze) {
+            if (!empty($this->writeToFile)) {
+                $this->writeDepTreeToFile($depTree, $this->writeToFile);
+            }
+            $this->log("onlyAnalyze mode, Done.");
+            return 0;
+        }
+
         $depTree['type'] = Constants::BUILD_TOOL_TYPE;
         $depTree['language'] = Constants::PROJECT_LANGUAGE;
-        $depTree['severityLevel'] = $input->getOption('severityLevel');
+        $depTree['severityLevel'] = $this->severityLevel;
 
         $this->log(json_encode($depTree, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES), true, IOInterface::VERBOSE);
 
         $curl = new CurlClient();
         $response = $curl->post_json($this->endpoint, $depTree);
         if ($curl->http_code >= 400) {
-            throw new NetworkException("NetworkError: {$curl->http_code}");
+            throw new NetworkException(sprintf(Constants::ERROR_ON_NETWORK, $curl->http_code));
         }
         if (empty($response)) {
             throw new APIException(Constants::ERROR_ON_API);
         }
 
+        $depTree['result'] = json_decode($response, true);
+        if (!empty($this->writeToFile)) {
+            $this->writeDepTreeToFile($depTree, $this->writeToFile);
+        }
         $this->rendererResponse($response);
 
         return 0;
+    }
+
+    private function getAndValidateOptions(InputInterface $input) {
+        $this->endpoint             = $input->getOption('endpoint');
+        if ($this->endpoint != '' && !filter_var($this->endpoint, FILTER_VALIDATE_URL)) {
+            throw new RuntimeException(sprintf(Constants::ERROR_ON_OPTION, 'endpoint'));
+        }
+
+        $this->severityLevel        = $input->getOption('severityLevel');
+        if (!is_string($this->severityLevel) || !in_array($this->severityLevel, ['High', 'Medium', 'Low'])) {
+            throw new RuntimeException(sprintf(Constants::ERROR_ON_OPTION, 'severityLevel'));
+        }
+
+        $this->onlyProvenance       = $input->getOption('onlyProvenance') != null;
+
+        $this->failOnVuln           = $input->getOption('notFailOnVuln') == null;
+
+        $this->onlyAnalyze          = $input->getOption('onlyAnalyze') != null;
+
+        $this->writeToFile          = $input->getOption('writeToFile');
+        if (!is_string($this->writeToFile)) {
+            throw new RuntimeException(sprintf(Constants::ERROR_ON_OPTION, 'writeToFile'));
+        }
+
+        $this->withDevReqs          = $input->getOption('withDevReqs') != null;
     }
 
     private function installDeps() {
@@ -145,7 +205,7 @@ EOF
         }
         $install->run();
 
-        $lockedRepo = $composer->getLocker()->getLockedRepository($this->devMode);
+        $lockedRepo = $composer->getLocker()->getLockedRepository($this->withDevReqs);
 
         $platformOverrides = $composer->getConfig()->get('platform') ?: array();
         $platformRepo = new PlatformRepository(array(), $platformOverrides);
@@ -185,10 +245,10 @@ EOF
 
     private function buildDepTree() {
         try {
-            $lockedRepo = $this->getComposer()->getLocker()->getLockedRepository($this->devMode);
+            $lockedRepo = $this->getComposer()->getLocker()->getLockedRepository($this->withDevReqs);
         } catch (\LogicException $ex) {
             $this->installDeps();
-            $lockedRepo = $this->getComposer()->getLocker()->getLockedRepository($this->devMode);
+            $lockedRepo = $this->getComposer()->getLocker()->getLockedRepository($this->withDevReqs);
         }
 
         $rootRequires = $this->getRootRequires();
@@ -346,4 +406,14 @@ EOF
     private function log($msg, $newline = true, $verbose = IOInterface::NORMAL) {
         $this->getIO()->write($msg, $newline, $verbose);
     }
+
+    private function writeDepTreeToFile($tree, $fn){
+        if(!is_dir(dirname($fn))){
+            mkdir(dirname($fn), 0755, true);
+        }
+        $file = fopen($fn, 'w');
+        fwrite($file, json_encode($tree, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
+        fclose($file);
+    }
+
 }
