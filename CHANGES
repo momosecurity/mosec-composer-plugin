@@ -2,6 +2,10 @@ Changelog
 
 =========
 
+Version 2.0.3
+
+- bugfix   change getPrettyName() to getName() and getPrettyVersion() to getVersion()
+
 Version 2.0.2
 
 - feature  support --onlyAnalyze mode
