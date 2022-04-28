@@ -19,7 +19,7 @@ WeChat:
 | Composer Version | Plugin Version |
 |------------------|----------------|
 | \>= 1.7.0        | 1.0.6          |
-| \>= 2.0.0        | 2.0.2          |
+| \>= 2.0.0        | 2.0.3          |
 
 
 ## 安装
@@ -28,7 +28,7 @@ WeChat:
 
 ```shell script
 > composer config -g repo.gh-momo-plugin git https://github.com/momosecurity/mosec-composer-plugin.git
-> composer global require --dev momo/mosec-composer-plugin:2.0.2
+> composer global require --dev momo/mosec-composer-plugin:2.0.3
 ```
 
 
