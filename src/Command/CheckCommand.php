@@ -223,9 +223,9 @@ EOF
         foreach ($repo->getPackages() as $package) {
             if (!isset($packages[$package->getName()])
                 || !is_object($packages[$package->getName()])
-                || version_compare($packages[$package->getPrettyName()]->getVersion(), $package->getVersion(), '<')
+                || version_compare($packages[$package->getName()]->getVersion(), $package->getVersion(), '<')
             ) {
-                $packages[$package->getPrettyName()] = $package;
+                $packages[$package->getName()] = $package;
             }
         }
         return $packages;
@@ -264,8 +264,8 @@ EOF
         unset($packageInTree);
 
         $depsTree = [];
-        $depsTree['name'] = $this->getComposer()->getPackage()->getPrettyName();
-        $depsTree['version'] = $this->getComposer()->getPackage()->getPrettyVersion();
+        $depsTree['name'] = $this->getComposer()->getPackage()->getName();
+        $depsTree['version'] = $this->getComposer()->getPackage()->getVersion();
         if (strpos($depsTree['version'], 'No version set') !== false) {
             $depsTree['version'] = '1.0.0';
         }
@@ -294,7 +294,8 @@ EOF
             $requirePackage = $this->getPackage($requireName);
 
             if ($requirePackage == null) {
-                return [];
+                $this->log("Package [$requireName] not found on generatePackageTree.", true, IOInterface::DEBUG);
+                continue;
             }
 
             if (!in_array($requireName, $packageInTree, true)) {
@@ -306,8 +307,8 @@ EOF
             }
         }
         $tree = array(
-            'name' => $package->getPrettyName(),
-            'version' => $package->getPrettyVersion(),
+            'name' => $package->getName(),
+            'version' => $package->getVersion(),
             'description' => $package instanceof CompletePackageInterface ? $package->getDescription() : '',
         );
 
@@ -345,9 +346,9 @@ EOF
             $newBlock = [];
             $newBlock['name'] = $block['name'];
             if (isset($this->systemDeps[$block['name']])) {
-                $newBlock['version'] = $this->systemDeps[$block['name']]->getPrettyVersion();
+                $newBlock['version'] = $this->systemDeps[$block['name']]->getVersion();
             } else if (isset($this->installedDeps[$block['name']])) {
-                $newBlock['version'] = $this->installedDeps[$block['name']]->getPrettyVersion();
+                $newBlock['version'] = $this->installedDeps[$block['name']]->getVersion();
             } else {
                 $newBlock['version'] = $block['version'];
             }
